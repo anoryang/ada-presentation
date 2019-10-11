@@ -48,19 +48,11 @@ cuts.price <- seq(0, 1000, 125)
 ```
 
 ```{r}
-data <- dat <- fread("./Data/MyData.csv")
+data <- dat <- fread("MyData.csv")
 dat[, eval(price.group.name) := as.factor(as.character(cut2(x = get(price.name), cuts = cuts.price)))]
 # colnames(dat)
 ```
 
-```{r}
-# functions
-split_str <- function(str){
-  s <- str_extract_all(unlist(strsplit(str, ",")), "[:alpha:]+")
-  amenities_i <- unlist(lapply(s, function(i){paste(i, collapse = " ")}))
-  return(amenities_i)
-}
-```
 ---
 class: inverse, center, middle
 
@@ -76,7 +68,7 @@ class: inverse, center, middle
 ---
 ## Wordcloud
 ```{r out.width='100%'}
-freq <- table(readRDS("./Data/description.rds"))
+freq <- table(readRDS("description.rds"))
 wordcloud2(freq,shape='star')
 # letterCloud(demoFreq,"R")
 # wordcloud2(freq, figPath = "peace.png", size = 1.5, color = "skyblue", backgroundColor="black")
@@ -85,7 +77,7 @@ wordcloud2(freq,shape='star')
 ---
 ## Sunburst
 ```{r out.width='100%'}
-boroughs <- aggregate(data$id,list(data$neighbourhood_group_cleansed),length)
+boroughs <- aggregate(dat$id,list(dat$neighbourhood_group_cleansed),length)
 plot_ly(labels=boroughs[,1], values=boroughs[,2], type = "pie",textinfo = "label+percent"
            ) %>%
       layout(title = paste("Proportion By Boroughs"),showlegend = F,
@@ -113,9 +105,6 @@ dat %>%
   leaflet() %>%
   addTiles(urlTemplate = "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png")  %>%
   mapOptions(zoomToLimits="always") %>%
-  addCircles(~longitude, ~latitude, color = ~pal(dat$`price group`), weight = 3, opacity = 0.7,popup = pop, group = "Restaurants") %>%
-  addMarkers(lat=dat$latitude, lng=dat$longitude,
-  clusterOptions = markerClusterOptions(), popup=pop) -> map_nolayer
-map_nolayer
+  addCircles(~longitude, ~latitude, color = ~pal(dat$`price group`), weight = 3, opacity = 0.7,popup = pop, group = "rooms") -> map_nolayer
 ```
 
